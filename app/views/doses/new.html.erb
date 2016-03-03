@@ -1,0 +1,7 @@
+<%= simple_form_for([@cocktail, @dose]) do |f| %>
+  <%= f.error_notification %>
+
+  <%= f.input :description %>
+  <%= f.collection_select(:ingredient_id, @avialable_ingredients, :id, :name) %>
+  <%= f.submit %>
+<% end %>

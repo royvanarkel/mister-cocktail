@@ -3,19 +3,19 @@ class DosesController < ApplicationController
     @dose = Dose.new
     find_cocktails
     @ingredients = Ingredient.all
-    @avialable_ingredients = @ingredients.select do |ingredient|
-      ingr = @cocktail.ingredients
-      !ingr.include?(ingredient)
-    end
+    @avialable_ingredients = find_avialable_ingredients(@ingredients, @cocktail)
   end
 
   def create
     find_cocktails
     @dose = Dose.new(dose_params)
     @dose.cocktail = @cocktail
-    if @dose.save
+    if @dose.valid?
+      @dose.save
       redirect_to cocktail_path(@cocktail)
     else
+      @ingredients = Ingredient.all
+      @avialable_ingredients = find_avialable_ingredients(@ingredients, @cocktail)
       render :new
     end
   end
@@ -27,6 +27,7 @@ class DosesController < ApplicationController
     redirect_to cocktail_path(@cocktail)
   end
 
+
   private
 
   def dose_params
@@ -35,6 +36,14 @@ class DosesController < ApplicationController
 
   def find_cocktails
     @cocktail = Cocktail.find(params[:cocktail_id])
+  end
+
+  def find_avialable_ingredients(ingredients, cocktail)
+    selected_ingr = ingredients.select do |ingredient|
+      ingr = cocktail.ingredients
+      !ingr.include?(ingredient)
+    end
+    return selected_ingr
   end
 
 end
